@@ -21,19 +21,17 @@ class Text extends Base
             return $this->htmlValue();
         }
 
+        $type = 'text';
+        if ($this->isPassword) $type = 'password';
+
         $extra = $this->generateExtra(array(
+            'type' => $type,
+            'name' => $this->name,
+            'value' => htmlspecialchars($this->value),
             'maxlength' => $this->maxlength,
             'class'     => $this->class
         ));
 
-        $type = 'text';
-        if ($this->isPassword) $type = 'password';
-
-        return
-            '<input type="' . $type . '" ' .
-            'name="' . $this->name . '" ' .
-            'value="' . htmlspecialchars($this->value) . '"' .
-            $extra .
-            '>';
+        return '<input type="' . $type . '" ' . $extra . '>';
     }
 }

@@ -43,7 +43,7 @@ class Form
 
     public function addControl(Control\Base $obj)
     {
-        $this->fields[$obj->getName()] = $obj->setFormName($this->name);
+        $this->fields[$obj->getName()] = $obj;
 
         return $this;
     }
@@ -215,15 +215,15 @@ class Form
             return true;
         }
 
-        if (!isset($_POST[$this->name . '_myfrm_sbm'])) {
+        if (!isset($_REQUEST[$this->name . '_myfrm_sbm'])) {
             return false;
         }
 
         $this->errors = array();
         foreach ($this->fields as $key => $field) {
             $this->fields[$key]->process();
-            if ($this->fields[$key]->preg_check) {
-                if (!preg_match($this->fields[$key]->preg_check, $this->fields[$key]->getValue())) {
+            if ($this->fields[$key]->getPreg()) {
+                if (!preg_match($this->fields[$key]->getPreg(), $this->fields[$key]->getValue())) {
                     $this->errors[] = $field->getName();
                 }
             }
@@ -282,7 +282,7 @@ class Form
     {
         $r = array();
         foreach ($this->fields as $field) {
-            $r[$field->getName()] = $field->getName();
+            $r[$field->getName()] = $field->getValue();
         }
         return $r;
     }

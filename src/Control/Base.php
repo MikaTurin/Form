@@ -13,17 +13,22 @@ class Base
     protected $label;
     protected $stripTags = true;
 
-    public function __construct($name, $value = null)
+    public function __construct($name, $class = null, $value = null)
     {
         $this->name = $name;
-        if (isset ($value)) {
+
+        if (!is_null($class)) {
+            $this->class = $class;
+        }
+
+        if (!is_null($value)) {
             $this->value = $value;
         }
     }
 
-    public static function make($name, $value = null)
+    public static function make($name, $class = null, $value = null)
     {
-        return new static($name, $value);
+        return new static($name, $class, $value);
     }
 
     public function getName()
@@ -72,7 +77,7 @@ class Base
         $this->preg = $preg;
     }
 
-    public function setClassName($class)
+    public function setClass($class)
     {
         $this->class = $class;
 
@@ -110,12 +115,12 @@ class Base
 
     public function process()
     {
-        if (!isset($_REQUEST[$this->key])) return;
+        if (!isset($_REQUEST[$this->name])) return;
 
-        $s = $_REQUEST[$this->key];
+        $s = $_REQUEST[$this->name];
         $s = stripslashes($s);
         if ($this->stripTags) {
-            $s = preg_replace('/<.*>/isU', '', $tmp);
+            $s = preg_replace('/<.*>/isU', '', $s);
         }
         $this->value = trim($s);
     }
@@ -125,6 +130,7 @@ class Base
         $s = '';
 
         foreach ($options as $k => $v) {
+            if (empty($v)) continue;
             $s .= ' ' . $k . '="' . $v .'"';
         }
 
