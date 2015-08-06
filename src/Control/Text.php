@@ -1,4 +1,4 @@
-<?php namespace Msz\Form\Control;
+<?php namespace Msz\Forms\Control;
 
 class Text extends Base
 {

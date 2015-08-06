@@ -1,4 +1,4 @@
-<?php namespace Msz\Control;
+<?php namespace Msz\Forms\Control;
 
 class Base
 {
@@ -26,11 +26,50 @@ class Base
         return new static($name, $value);
     }
 
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
     public function setValue($value)
     {
         $this->value = $value;
 
         return $this;
+    }
+
+    public function getLabel()
+    {
+        return $this->label;
+    }
+
+    public function setLabel($label)
+    {
+        $this->label = $label;
+
+        return $this;
+    }
+
+    public function getPreg()
+    {
+        return $this->preg;
+    }
+
+    public function setPreg($preg)
+    {
+        $this->preg = $preg;
     }
 
     public function setClassName($class)
@@ -54,16 +93,14 @@ class Base
         return $this;
     }
 
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
     public function html()
     {
         return '';
+    }
+
+    public function htmlValue()
+    {
+        return htmlspecialchars(trim($this->value));
     }
 
     public function draw()
@@ -83,16 +120,29 @@ class Base
         $this->value = trim($s);
     }
 
-    protected function generateExtra()
+    protected function generateExtra(array $options = array())
     {
-        if (strlen($this->tagExtra)) {
-            return ' ' . $this->tagExtra;
+        $s = '';
+
+        foreach ($options as $k => $v) {
+            $s .= ' ' . $k . '="' . $v .'"';
         }
-        return '';
+
+        if (strlen($this->tagExtra)) {
+            $s .= ' ' . $this->tagExtra;
+        }
+
+        return $s;
     }
 
     public function htmlHidden()
     {
         return '<input type="hidden" name="' . $this->key . '" value="' . $this->value . '">';
     }
+
+    public function destroy()
+    {
+
+    }
+
 }

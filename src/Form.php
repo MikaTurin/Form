@@ -1,86 +1,49 @@
-<?php namespace Msz;
+<?php namespace Msz\Forms;
 
 class Form
 {
     protected $name;
     protected $action;
     protected $method = 'POST';
-    /** @var array  */
+    /** @var Control\Base[] */
     protected $fields;
     protected $showValues = false;
     protected $enctype = '';
     protected $errors = array();
     protected $rules = array();
-    protected $tag_extra = '';
+    protected $tagExtra = '';
     protected $cellspacing = 0;
     protected $classname = '';
     protected $tableWidth = '';
     protected $wasProcess = false;
 
-    function __construct($name = 'frm', $action = "")
+    function __construct($name, $action = null, $method = null)
     {
         $this->fields = array();
         $this->name = $name;
-        if (!strlen($action)) {
-            $action = basename($_SERVER['PHP_SELF']);
+        if (!is_null($action)) {
+            $this->action = basename($_SERVER['PHP_SELF']);
         }
-        $this->action = $action;
+        if (!is_null($method)) {
+            $this->method = $method;
+        }
     }
 
-    public static function make($name = 'frm', $action = "")
+    public static function make($name, $action = null, $method = null)
     {
-        return new static($name, $action);
+        return new static($name, $action, $method);
     }
 
-    function destroy()
+    public function destroy()
     {
         foreach ($this->fields as $field) {
-            $this->fields[$field->name]->destroy();
+            $this->fields[$field->getName()]->destroy();
         }
     }
 
-    /**
-     * @param $control
-     * @param $name
-     * @param null $param1
-     * @param null $param2
-     * @param null $param3
-     * @param null $param4
-     * @param null $param5
-     * @param null $param6
-     * @return myform_control
-     */
-    function add_control(
-        $control,
-        $name,
-        $param1 = null,
-        $param2 = null,
-        $param3 = null,
-        $param4 = null,
-        $param5 = null,
-        $param6 = null
-    ) {
-        $str = '';
-        for ($i = 1; $i <= 6; $i++) {
-            $var = 'param' . $i;
-            if (!($$var === null)) {
-                $str .= ", \$$var";
-            } else {
-                break;
-            }
-        }
-        $str = "\$this->fields['$name'] = new myform_$control (\$this->name, '$name' $str);";
-        eval ($str);
-        if ($control == 'xbeditor') {
-            $this->tag_extra = ' onsubmit="return xbUpdateField(this.' . $name . ');"';
-        }
-
-        return $this->fields[$name];
-    }
-
-    public function addControl(myform_control $obj)
+    public function addControl(Control\Base $obj)
     {
-        $this->fields[$obj->name] = $obj->setFormName($this->name);
+        $this->fields[$obj->getName()] = $obj->setFormName($this->name);
 
         return $this;
     }
@@ -100,48 +63,24 @@ class Form
         return $this;
     }
 
-    function set_label($key, $label)
-    {
-        if (isset ($this->fields[$key])) {
-            $this->fields[$key]->label = $label;
-        }
-    }
-
     /**
      * @param $name
      * @return \myform_control
      * @throws Exception
      */
-    function getField($name)
+    public function getField($name)
     {
         if (!array_key_exists($name, $this->fields)) throw new \Exception('no such field: '.$name);
 
         return $this->fields[$name];
     }
 
-    function setLabel($key, $label)
-    {
-        $this->set_label($key, $label);
-    }
-
-    function set_preg($key, $preg)
-    {
-        $this->setPreg($key, $preg);
-    }
-
-    function setPreg($key, $preg)
-    {
-        if (isset ($this->fields[$key])) {
-            $this->fields[$key]->preg_check = $preg;
-        }
-    }
-
-    function set_rule($key, $arr, $condition = MYFORM_AND, $inverse = 0)
+    public function setRule($key, $arr, $condition = 'AND', $inverse = 0)
     {
         $this->rules[$key] = array('rule' => $arr, 'condition' => $condition, 'inverse' => $inverse);
     }
 
-    function html_submit($button_text, $class = '', $extra = '', $type = 1)
+    public function htmlSubmit($button_text, $class = '', $extra = '', $type = 1)
     {
         if (strlen($class)) {
             $class = ' class="' . $class . '"';
@@ -167,36 +106,31 @@ class Form
         return $ret;
     }
 
-    function draw_submit($button_text, $class = '', $extra = '', $type = 1)
+    public function drawSubmit($button_text, $class = '', $extra = '', $type = 1)
     {
-        echo $this->html_submit($button_text, $class, $extra, $type);
+        echo $this->htmlSubmit($button_text, $class, $extra, $type);
     }
 
-    function form_begin()
+    public function begin()
     {
         $enctype = $add = '';
         if (strlen($this->enctype)) {
             $enctype = ' enctype="' . $this->enctype . '"';
         }
-        if (strlen($this->tag_extra)) {
-            $add = ' ' . $this->tag_extra;
+        if (strlen($this->tagExtra)) {
+            $add = ' ' . $this->tagExtra;
         }
         return '<form name="' . $this->name . '" action="' . $this->action . '" method="' . $this->method . '"' . $enctype . $add . '>';
     }
 
-    function begin()
-    {
-        return $this->form_begin();
-    }
-
-    function end()
+    public function end()
     {
         return
             '<input type="hidden" name="' . $this->name . '_myfrm_sbm" value="1">' .
             '</form>';
     }
 
-    function html($border = 0, $hide_submit = false, $hide_labels = false)
+    public function html($border = 0, $hide_submit = false, $hide_labels = false)
     {
         if (strlen($this->tableWidth)) {
             $ww = ' width="' . $this->tableWidth . '"';
@@ -204,14 +138,14 @@ class Form
             $ww = '';
         }
 
-        $ret = $this->form_begin() .
+        $ret = $this->begin() .
             '<table cellspacing="' . $this->cellspacing . '" cellpadding="0" border="' . $border . '"' . $ww . '>';
 
         foreach ($this->fields as $field) {
             $label = '';
-            $name = $field->name;
-            if (strlen($field->label)) {
-                $name = $field->label;
+            $name = $field->getName();
+            if (strlen($field->getLabel())) {
+                $name = $field->getLabel();
             }
             if (!$hide_labels) {
                 $label = '<td valign="top" class="' . $this->classname . '">' . $name . ' </td>';
@@ -225,7 +159,7 @@ class Form
 
         if (!$this->showValues && !$hide_submit) {
             $ret .= '<tr><td colspan="2" align="right"><br>';
-            $ret .= $this->html_submit('Submit');
+            $ret .= $this->htmlSubmit('Submit');
             $ret .= '</td></tr>' . "\n";
         }
 
@@ -237,7 +171,7 @@ class Form
 
     public function html2()
     {
-        $s = $this->form_begin();
+        $s = $this->begin();
 
         array_walk($this->fields, function ($el) use (&$s) {
             $s .= $el->html();
@@ -249,38 +183,33 @@ class Form
         return $s;
     }
 
-    function draw($border = 0)
+    public function draw($border = 0)
     {
         echo $this->html($border);
     }
 
-    function draw_value()
+    public function drawValue()
     {
         $this->showValues = true;
         foreach ($this->fields as $field) {
-            $this->fields[$field->name]->draw_value = true;
+            $this->fields[$field->getName()]->draw_value = true;
         }
     }
 
-    function draw_html()
+    public function drawHtml()
     {
         $this->showValues = false;
         foreach ($this->fields as $field) {
-            $this->fields[$field->name]->draw_value = false;
+            $this->fields[$field->getName()]->draw_value = false;
         }
     }
 
-    function is_submited()
+    public function isSubmited()
     {
-        return $this->isSubmited();
+        return isset($_REQUEST[$this->name . '_myfrm_sbm']);
     }
 
-    function isSubmited()
-    {
-        return isset($_POST[$this->name . '_myfrm_sbm']);
-    }
-
-    function process($force = false)
+    public function process($force = false)
     {
         if ($this->wasProcess && $force == false) {
             return true;
@@ -294,13 +223,13 @@ class Form
         foreach ($this->fields as $key => $field) {
             $this->fields[$key]->process();
             if ($this->fields[$key]->preg_check) {
-                if (!preg_match($this->fields[$key]->preg_check, $this->fields[$key]->value)) {
-                    $this->errors[] = $field->name;
+                if (!preg_match($this->fields[$key]->preg_check, $this->fields[$key]->getValue())) {
+                    $this->errors[] = $field->getName();
                 }
             }
         }
 
-        $this->check_rules();
+        $this->checkRules();
         if (sizeof($this->errors)) {
             return false;
         }
@@ -308,7 +237,7 @@ class Form
         return true;
     }
 
-    function check_rules()
+    public function checkRules()
     {
         foreach ($this->rules as $key => $arr) {
             if (!is_array($arr['rule'])) {
@@ -324,7 +253,7 @@ class Form
             $str = '';
 
             foreach ($arr['rule'] as $field => $val) {
-                $str .= preg_match($val, $this->fields[$field]->value) . ' ' . $cond . ' ';
+                $str .= preg_match($val, $this->fields[$field]->getValue()) . ' ' . $cond . ' ';
             }
             $str = substr($str, 0, -4);
             eval ('$res = (' . $str . ');');
@@ -337,23 +266,23 @@ class Form
         }
     }
 
-    function clear()
+    public function clear()
     {
         foreach ($this->fields as $field) {
-            $this->fields[$field->name]->value = null;
+            $this->fields[$field->getName()]->setValue(null);
         }
     }
 
     public function getValue($name)
     {
-        return $this->fields[$name]->value;
+        return $this->fields[$name]->getValue();
     }
 
     public function getValues()
     {
         $r = array();
         foreach ($this->fields as $field) {
-            $r[$field->name] = $field->value;
+            $r[$field->getName()] = $field->getName();
         }
         return $r;
     }
