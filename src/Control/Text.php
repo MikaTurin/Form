@@ -13,6 +13,8 @@ class Text extends Base
     public function setMaxLength($maxlength)
     {
         $this->maxlength = $maxlength;
+		
+		return $this;
     }
 
     public function html()
