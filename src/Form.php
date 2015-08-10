@@ -287,4 +287,9 @@ class Form
         }
         return $r;
     }
+	    
+    public function getErrors() 
+    {
+        return $this->errors;
+    }	
 }
