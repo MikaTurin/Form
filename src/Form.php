@@ -65,8 +65,8 @@ class Form
 
     /**
      * @param $name
-     * @return \myform_control
-     * @throws Exception
+     * @return Control\Base
+     * @throws \Exception
      */
     public function getField($name)
     {
@@ -278,10 +278,11 @@ class Form
         return $this->fields[$name]->getValue();
     }
 
-    public function getValues()
+    public function getValues($skipEmpty = false)
     {
         $r = array();
         foreach ($this->fields as $field) {
+            if ($skipEmpty && !$field->getValue()) continue;
             $r[$field->getName()] = $field->getValue();
         }
         return $r;

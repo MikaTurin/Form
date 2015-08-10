@@ -4,6 +4,7 @@ class Select extends Base
 {
     protected $options;
     protected $optionsExtra;
+    protected $useFirstEmpty = null;
 
     public function loadArray(array $r)
     {
@@ -15,7 +16,7 @@ class Select extends Base
     function html()
     {
         if ($this->drawValue) {
-            $cnt = sizeof($this->options);
+
             foreach ($this->options as $k => $v) {
                 if ((string)$this->value == (string)$k) {
                     return $v;
@@ -32,6 +33,9 @@ class Select extends Base
 
         $ret = '<select' . $extra . '>';
 
+        if (!is_null($this->useFirstEmpty)) {
+            $ret .= '<option value="">'.$this->useFirstEmpty.'</option>';
+        }
 
         foreach ($this->options as $k => $v) {
             $selected = $extra = '';
@@ -46,5 +50,12 @@ class Select extends Base
 
         $ret .= '</select>';
         return $ret;
+    }
+
+    public function setUseFirstEmpty($useFirstEmpty = '')
+    {
+        $this->useFirstEmpty = $useFirstEmpty;
+
+        return $this;
     }
 }
