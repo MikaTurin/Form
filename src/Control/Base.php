@@ -75,6 +75,8 @@ class Base
     public function setPreg($preg)
     {
         $this->preg = $preg;
+		
+		return $this;
     }
 
     public function setClass($class)
@@ -143,7 +145,7 @@ class Base
 
     public function htmlHidden()
     {
-        return '<input type="hidden" name="' . $this->key . '" value="' . $this->value . '">';
+        return '<input type="hidden" name="' . $this->name . '" value="' . $this->value . '">';
     }
 
     public function destroy()
