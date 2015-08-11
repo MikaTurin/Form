@@ -58,4 +58,16 @@ class Select extends Base
 
         return $this;
     }
+
+    public function setVerifyValueWithOptions()
+    {
+        $this->setVerifier(function ($value) {
+            if (!array_key_exists($value, $this->options)) {
+                return array('field' => $this->name, 'message' => 'value not in the list');
+            }
+            return null;
+        });
+
+        return $this;
+    }
 }

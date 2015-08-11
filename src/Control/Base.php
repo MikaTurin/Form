@@ -11,7 +11,10 @@ class Base
     protected $saveEmpty = true;
     protected $preg = '';
     protected $label;
-    protected $stripTags = true;
+    protected $useStripTags = true;
+    protected $useStripSlashes = true;
+    /** @var callable */
+    protected $verifier;
 
     public function __construct($name, $class = null, $value = null)
     {
@@ -120,8 +123,12 @@ class Base
         if (!isset($_REQUEST[$this->name])) return;
 
         $s = $_REQUEST[$this->name];
-        $s = stripslashes($s);
-        if ($this->stripTags) {
+
+        if ($this->useStripSlashes) {
+            $s = stripslashes($s);
+        }
+
+        if ($this->useStripTags) {
             $s = preg_replace('/<.*>/isU', '', $s);
         }
         $this->value = trim($s);
@@ -153,4 +160,39 @@ class Base
 
     }
 
+    public function getVerifier()
+    {
+        return $this->verifier;
+    }
+
+    public function setVerifier(callable $verifier)
+    {
+        $this->verifier = $verifier;
+
+        return $this;
+    }
+
+    public function isUseStripSlashes()
+    {
+        return $this->useStripSlashes;
+    }
+
+    public function setUseStripSlashes($useStripSlashes)
+    {
+        $this->useStripSlashes = $useStripSlashes;
+
+        return $this;
+    }
+
+    public function isUseStripTags()
+    {
+        return $this->useStripTags;
+    }
+
+    public function setUseStripTags($useStripTags)
+    {
+        $this->useStripTags = $useStripTags;
+
+        return $this;
+    }
 }

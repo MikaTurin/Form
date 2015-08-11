@@ -56,6 +56,13 @@ class Form
         return $this;
     }
 
+    public function setAction($action)
+    {
+        $this->action = $action;
+
+        return $this;
+    }
+
     public function setCellspacing($val)
     {
         $this->cellspacing = $val;
@@ -221,10 +228,19 @@ class Form
 
         $this->errors = array();
         foreach ($this->fields as $key => $field) {
+
             $this->fields[$key]->process();
-            if ($this->fields[$key]->getPreg()) {
-                if (!preg_match($this->fields[$key]->getPreg(), $this->fields[$key]->getValue())) {
-                    $this->errors[] = $field->getName();
+
+            if ($preg = $this->fields[$key]->getPreg()) {
+                if (!preg_match($preg, $field->getValue())) {
+                    $this->errors[] = array('field' => $field->getName(), 'message' => 'preg');
+                }
+            }
+
+            if ($verifier = $field->getVerifier()) {
+                $err = call_user_func($verifier, $field->getValue());
+                if (!empty($err)) {
+                    $this->errors[] = array('field' => $field->getName()) + $err;
                 }
             }
         }
@@ -287,9 +303,9 @@ class Form
         }
         return $r;
     }
-	    
-    public function getErrors() 
+
+    public function getErrors()
     {
         return $this->errors;
-    }	
+    }
 }
