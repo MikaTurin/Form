@@ -50,10 +50,35 @@ class Form
 
     public function setMethod($method)
     {
-        if (!in_array(strtoupper($method), array('GET', 'POST'))) die('incorrect method set');
+        $method = strtoupper($method);
+        if (!in_array($method, array('GET', 'POST'))) die('incorrect method set');
         $this->method = $method;
 
         return $this;
+    }
+
+    public function setMethodGet()
+    {
+        $this->setMethod('GET');
+
+        return $this;
+    }
+
+    public function setMethodPost()
+    {
+        $this->setMethod('POST');
+
+        return $this;
+    }
+
+    public function isMethodGet()
+    {
+        return $this->method == 'GET';
+    }
+
+    public function isMethodPost()
+    {
+        return $this->method == 'POST';
     }
 
     public function setAction($action)
@@ -181,6 +206,7 @@ class Form
         $s = $this->begin();
 
         array_walk($this->fields, function ($el) use (&$s) {
+            /** @var Control\Base $el */
             $s .= $el->html();
         });
         $s .= '<input type="button" value="submit" onclick="this.form.submit();">';
@@ -213,7 +239,13 @@ class Form
 
     public function isSubmited()
     {
-        return isset($_REQUEST[$this->name . '_myfrm_sbm']);
+        if ($this->isMethodGet()) {
+            return isset($_GET[$this->name . '_myfrm_sbm']);
+        } elseif ($this->isMethodPost()) {
+            return (boolean)sizeof($_POST);
+        }
+
+        return false;
     }
 
     public function process($force = false)
@@ -222,7 +254,7 @@ class Form
             return true;
         }
 
-        if (!isset($_REQUEST[$this->name . '_myfrm_sbm'])) {
+        if (!$this->isSubmited()) {
             return false;
         }
 
@@ -272,6 +304,7 @@ class Form
                 $str .= preg_match($val, $this->fields[$field]->getValue()) . ' ' . $cond . ' ';
             }
             $str = substr($str, 0, -4);
+            /** @var boolean $res */
             eval ('$res = (' . $str . ');');
             if ($arr['inverse']) {
                 $res = !$res;
