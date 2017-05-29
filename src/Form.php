@@ -219,6 +219,7 @@ class Form
     public function draw($border = 0)
     {
         echo $this->html($border);
+        return $this;
     }
 
     public function drawValue()
