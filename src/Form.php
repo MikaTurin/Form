@@ -110,6 +110,7 @@ class Form
     public function setRule($key, $arr, $condition = 'AND', $inverse = 0)
     {
         $this->rules[$key] = array('rule' => $arr, 'condition' => $condition, 'inverse' => $inverse);
+        return $this;
     }
 
     public function htmlSubmit($button_text, $class = '', $extra = '', $type = 1)
