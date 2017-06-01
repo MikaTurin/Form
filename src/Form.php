@@ -1,11 +1,13 @@
 <?php namespace Msz\Forms;
 
+use Msz\Forms\Control\Base;
+
 class Form
 {
     protected $name;
     protected $action;
     protected $method = 'POST';
-    /** @var Control\Base[] */
+    /** @var Base[] */
     protected $fields;
     protected $showValues = false;
     protected $enctype = '';
@@ -174,7 +176,13 @@ class Form
         $ret = $this->begin() .
             '<table cellspacing="' . $this->cellspacing . '" cellpadding="0" border="' . $border . '"' . $ww . '>';
 
+        $buttons = array();
+
         foreach ($this->fields as $field) {
+            if ($field->getType() == Base::BUTTON) {
+                $buttons[] = $field;
+                continue;
+            }
             $label = '';
             $name = $field->getName();
             if (strlen($field->getLabel())) {
@@ -190,9 +198,14 @@ class Form
                 '</tr>';
         }
 
-        if (!$this->showValues && !$hide_submit) {
+
+        if (!$this->showValues && (!$hide_submit || sizeof($buttons))) {
             $ret .= '<tr><td colspan="2" align="right"><br>';
-            $ret .= $this->htmlSubmit('Submit');
+
+            foreach ($buttons as $button) {
+                $ret .= $button->html();
+            }
+            if (!$hide_submit) $ret .= $this->htmlSubmit('Submit');
             $ret .= '</td></tr>' . "\n";
         }
 

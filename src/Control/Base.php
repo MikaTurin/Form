@@ -1,12 +1,16 @@
 <?php namespace Msz\Forms\Control;
 
-class Base
+abstract class Base
 {
+    const INPUT = 1;
+    const BUTTON = 2;
+
     protected $name;
     protected $class;
-    protected $type;
+    protected $type = self::INPUT;
     protected $value;
     protected $tagExtra = '';
+    protected $styles = array();
     protected $drawValue = false;
     protected $saveEmpty = true;
     protected $preg = '';
@@ -96,6 +100,12 @@ class Base
         return $this;
     }
 
+    public function addStyle($s) {
+        $this->styles[] = $s;
+
+        return $this;
+    }
+
     public function setReadOnly()
     {
         $this->tagExtra .= ' readonly="readonly" ';
@@ -103,10 +113,12 @@ class Base
         return $this;
     }
 
-    public function html()
+    public function getType()
     {
-        return '';
+        return $this->type;
     }
+
+    abstract public function html();
 
     public function htmlValue()
     {
@@ -141,6 +153,14 @@ class Base
         foreach ($options as $k => $v) {
             if (empty($v)) continue;
             $s .= ' ' . $k . '="' . $v .'"';
+        }
+
+        if (sizeof($this->styles)) {
+            $s .= ' style="';
+            foreach ($this->styles as $style) {
+                $s .= rtrim(trim($style), ';') . ';';
+            }
+            $s .= '"';
         }
 
         if (strlen($this->tagExtra)) {
