@@ -16,4 +16,9 @@ class Submit extends Base
         ));
         return '<input type="submit"'. $extra . '>';
     }
+
+    public function isUsed()
+    {
+        return (isset($_REQUEST[$this->name]) && $_REQUEST[$this->name] == $this->value);
+    }
 }

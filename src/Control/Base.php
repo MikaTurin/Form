@@ -118,6 +118,16 @@ abstract class Base
         return $this->type;
     }
 
+    public function setType($type)
+    {
+        if (!in_array($type, array(self::BUTTON, self::INPUT))) {
+            throw new \Exception('incorrect set type: ' . $type);
+        }
+        $this->type = $type;
+
+        return $this;
+    }
+
     abstract public function html();
 
     public function htmlValue()
