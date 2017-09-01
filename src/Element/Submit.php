@@ -1,11 +1,11 @@
-<?php namespace Msz\Forms\Control;
+<?php namespace Msz\Forms\Element;
 
-class Submit extends Base
+class Submit extends ElementBase
 {
     public function __construct($name, $class = null, $value = null)
     {
         parent::__construct($name, $class, $value);
-        $this->type = Base::BUTTON;
+        $this->type = ElementBase::BUTTON;
     }
 
     public function html()

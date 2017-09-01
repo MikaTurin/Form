@@ -1,13 +1,13 @@
 <?php namespace Msz\Forms;
 
-use Msz\Forms\Control\Base;
+use Msz\Forms\Element\ElementBase;
 
 class Form
 {
     protected $name;
     protected $action;
     protected $method = 'POST';
-    /** @var Base[] */
+    /** @var ElementBase[] */
     protected $fields;
     protected $showValues = false;
     protected $enctype = '';
@@ -43,7 +43,7 @@ class Form
         }
     }
 
-    public function addControl(Control\Base $obj)
+    public function addElement(ElementBase $obj)
     {
         $this->fields[$obj->getName()] = $obj;
 
@@ -99,12 +99,12 @@ class Form
 
     /**
      * @param $name
-     * @return Control\Base
+     * @return ElementBase
      * @throws \Exception
      */
     public function getField($name)
     {
-        if (!array_key_exists($name, $this->fields)) throw new \Exception('no such field: '.$name);
+        if (!array_key_exists($name, $this->fields)) throw new Exception('no such field: '.$name);
 
         return $this->fields[$name];
     }
@@ -179,7 +179,7 @@ class Form
         $buttons = array();
 
         foreach ($this->fields as $field) {
-            if ($field->getType() == Base::BUTTON) {
+            if ($field->getPosition() == ElementBase::POSITION_BUTTON) {
                 $buttons[] = $field;
                 continue;
             }
@@ -276,19 +276,10 @@ class Form
         $this->errors = array();
         foreach ($this->fields as $key => $field) {
 
-            $this->fields[$key]->process();
+            $this->fields[$key]->handleRequest($_REQUEST);
 
-            if ($preg = $this->fields[$key]->getPreg()) {
-                if (!preg_match($preg, $field->getValue())) {
-                    $this->errors[] = array('field' => $field->getName(), 'message' => 'preg');
-                }
-            }
-
-            if ($verifier = $field->getVerifier()) {
-                $err = call_user_func($verifier, $field->getValue());
-                if (!empty($err)) {
-                    $this->errors[] = array('field' => $field->getName()) + $err;
-                }
+            if (!$this->fields[$key]->isValid()) {
+                $this->errors[$field->getName()] = $field->getErrors();
             }
         }
 
