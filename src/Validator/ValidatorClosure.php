@@ -1,6 +1,6 @@
-<?php namespace Msz\Forms\Validation;
+<?php namespace Msz\Forms\Validator;
 
-class ValidationClosure extends ValidationBase
+class ValidatorClosure extends ValidatorBase
 {
     protected $message = '%element% callable validation failed';
     protected $closure;

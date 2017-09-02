@@ -17,7 +17,7 @@ class Select extends ElementBase
 
     function html()
     {
-        $ret = '<select' . $this->getAttributes('value') . '>';
+        $ret = '<select' . $this->getAttributesHtml('value') . '>';
 
         if (!is_null($this->emptyFirstOption)) {
             $ret .= '<option value="">'.$this->emptyFirstOption.'</option>';

@@ -1,6 +1,6 @@
-<?php namespace Msz\Forms\Validation;
+<?php namespace Msz\Forms\Validator;
 
-abstract class ValidationBase
+abstract class ValidatorBase
 {
     protected $message = "%element% is invalid.";
 

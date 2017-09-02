@@ -1,6 +1,6 @@
-<?php namespace Msz\Forms\Validation;
+<?php namespace Msz\Forms\Validator;
 
-class RegExp extends ValidationBase
+class RegExp extends ValidatorBase
 {
     protected $message = '%element% failed on regexp';
     protected $pattern;

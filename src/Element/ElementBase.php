@@ -73,7 +73,7 @@ abstract class ElementBase extends Base
 
     public function html()
     {
-        return '<input' . $this->getAttributes() . '/>';
+        return '<input' . $this->getAttributesHtml() . '/>';
     }
 
     public function render($view)

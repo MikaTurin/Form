@@ -2,32 +2,28 @@
 
 use Msz\Forms\Element\ElementBase;
 
-class Form
+class Form extends Base
 {
-    protected $name;
-    protected $action;
-    protected $method = 'POST';
+    const METHOD_GET = 'GET';
+    const METHOD_POST = 'POST';
+
     /** @var ElementBase[] */
-    protected $fields;
-    protected $showValues = false;
-    protected $enctype = '';
+    protected $fields = array();
     protected $errors = array();
     protected $rules = array();
-    protected $tagExtra = '';
-    protected $cellspacing = 0;
-    protected $classname = '';
     protected $tableWidth = '';
     protected $wasProcess = false;
 
     function __construct($name, $action = null, $method = null)
     {
         $this->fields = array();
-        $this->name = $name;
-        if (!is_null($action)) {
-            $this->action = basename($_SERVER['PHP_SELF']);
-        }
+        $this->setName($name);
+        $this->setAction($action);
         if (!is_null($method)) {
-            $this->method = $method;
+            $this->setMethod($method);
+        }
+        else {
+            $this->setMethodPost();
         }
     }
 
@@ -50,61 +46,69 @@ class Form
         return $this;
     }
 
+    public function getName()
+    {
+        return $this->getAttribute('name');
+    }
+
+    public function setName($name)
+    {
+        $this->setAttribute('name', $name);
+    }
+
+    public function getMethod()
+    {
+        return $this->getAttribute('method');
+    }
+
     public function setMethod($method)
     {
         $method = strtoupper($method);
-        if (!in_array($method, array('GET', 'POST'))) die('incorrect method set');
-        $this->method = $method;
+        if (!in_array($method, array(self::METHOD_GET, self::METHOD_POST))) {
+            throw new Exception('incorrect method: ' . $method);
+        }
+        $this->setAttribute('method', $method);
 
         return $this;
     }
 
     public function setMethodGet()
     {
-        $this->setMethod('GET');
-
-        return $this;
+        $this->setMethod(self::METHOD_GET);
     }
 
     public function setMethodPost()
     {
-        $this->setMethod('POST');
-
-        return $this;
+        $this->setMethod(self::METHOD_POST);
     }
 
     public function isMethodGet()
     {
-        return $this->method == 'GET';
+        return $this->getMethod() == self::METHOD_GET;
     }
 
     public function isMethodPost()
     {
-        return $this->method == 'POST';
+        return $this->getMethod() == self::METHOD_POST;
+    }
+
+    public function getAction()
+    {
+        return $this->getAttribute('action');
     }
 
     public function setAction($action)
     {
-        $this->action = $action;
+        $this->setAttribute('action', $action);
 
         return $this;
     }
 
-    public function setCellspacing($val)
-    {
-        $this->cellspacing = $val;
-
-        return $this;
-    }
-
-    /**
-     * @param $name
-     * @return ElementBase
-     * @throws \Exception
-     */
     public function getField($name)
     {
-        if (!array_key_exists($name, $this->fields)) throw new Exception('no such field: '.$name);
+        if (!array_key_exists($name, $this->fields)) {
+            throw new Exception('no such field: ' . $name);
+        }
 
         return $this->fields[$name];
     }
@@ -148,14 +152,8 @@ class Form
 
     public function begin()
     {
-        $enctype = $add = '';
-        if (strlen($this->enctype)) {
-            $enctype = ' enctype="' . $this->enctype . '"';
-        }
-        if (strlen($this->tagExtra)) {
-            $add = ' ' . $this->tagExtra;
-        }
-        return '<form name="' . $this->name . '" action="' . $this->action . '" method="' . $this->method . '"' . $enctype . $add . '>';
+
+        return '<form' . $this->getAttributesHtml() . '>';
     }
 
     public function end()
@@ -199,7 +197,7 @@ class Form
         }
 
 
-        if (!$this->showValues && (!$hide_submit || sizeof($buttons))) {
+        if (!$hide_submit || sizeof($buttons)) {
             $ret .= '<tr><td colspan="2" align="right"><br>';
 
             foreach ($buttons as $button) {
@@ -220,7 +218,7 @@ class Form
         $s = $this->begin();
 
         array_walk($this->fields, function ($el) use (&$s) {
-            /** @var Control\Base $el */
+            /** @var ElementBase $el */
             $s .= $el->html();
         });
         $s .= '<input type="button" value="submit" onclick="this.form.submit();">';
@@ -236,26 +234,10 @@ class Form
         return $this;
     }
 
-    public function drawValue()
-    {
-        $this->showValues = true;
-        foreach ($this->fields as $field) {
-            $this->fields[$field->getName()]->draw_value = true;
-        }
-    }
-
-    public function drawHtml()
-    {
-        $this->showValues = false;
-        foreach ($this->fields as $field) {
-            $this->fields[$field->getName()]->draw_value = false;
-        }
-    }
-
     public function isSubmited()
     {
         if ($this->isMethodGet()) {
-            return isset($_GET[$this->name . '_myfrm_sbm']);
+            return isset($_GET[$this->getName() . '_myfrm_sbm']);
         } elseif ($this->isMethodPost()) {
             return (boolean)sizeof($_POST);
         }
@@ -330,7 +312,7 @@ class Form
 
     public function getValue($name)
     {
-        return $this->fields[$name]->getValue();
+        return $this->getField($name)->getValue();
     }
 
     public function getValues($skipEmpty = false)

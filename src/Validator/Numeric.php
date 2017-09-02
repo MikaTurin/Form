@@ -1,6 +1,6 @@
-<?php namespace Msz\Forms\Validation;
+<?php namespace Msz\Forms\Validator;
 
-class Numeric extends ValidationBase
+class Numeric extends ValidatorBase
 {
     protected $message = '%element% must be numeric';
 

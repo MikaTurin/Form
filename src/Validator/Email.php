@@ -1,6 +1,6 @@
-<?php namespace Msz\Forms\Validation;
+<?php namespace Msz\Forms\Validator;
 
-class Email extends ValidationBase
+class Email extends ValidatorBase
 {
     protected $message = "%element% must contain correct email address";
 

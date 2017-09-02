@@ -1,4 +1,4 @@
-<?php namespace Msz\Forms\Validation;
+<?php namespace Msz\Forms\Validator;
 
 class AlphaNumeric extends RegExp
 {

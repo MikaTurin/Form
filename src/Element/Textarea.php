@@ -15,7 +15,7 @@ class Textarea extends ElementBase
 
     function html()
     {
-        return '<textarea '.$this->getAttributes('value').'>'.htmlspecialchars($this->getValue()).'</textarea>';
+        return '<textarea '.$this->getAttributesHtml('value').'>'.htmlspecialchars($this->getValue()).'</textarea>';
     }
 
     public function setCols($cols)

@@ -1,6 +1,6 @@
-<?php namespace Msz\Forms\Validation;
+<?php namespace Msz\Forms\Validator;
 
-class Date extends ValidationBase
+class Date extends ValidatorBase
 {
     protected $message = '%element% must contain a valid date';
 

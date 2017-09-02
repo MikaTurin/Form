@@ -1,6 +1,6 @@
-<?php namespace Msz\Forms\Validation;
+<?php namespace Msz\Forms\Validator;
 
-class Required extends ValidationBase
+class Required extends ValidatorBase
 {
     protected $message = "Error: %element% is a required field.";
 

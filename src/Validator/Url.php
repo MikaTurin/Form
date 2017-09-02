@@ -1,6 +1,6 @@
-<?php namespace Msz\Forms\Validation;
+<?php namespace Msz\Forms\Validator;
 
-class Url extends ValidationBase
+class Url extends ValidatorBase
 {
     protected $message = '%element% must contain a url (e.g. http://www.google.com)';
 
