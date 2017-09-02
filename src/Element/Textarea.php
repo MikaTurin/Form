@@ -2,9 +2,6 @@
 
 class Textarea extends ElementBase
 {
-    var $cols = 40;
-    var $rows = 5;
-
     public function __construct($name, array $attributes = null)
     {
         parent::__construct($name, $attributes);
@@ -13,9 +10,9 @@ class Textarea extends ElementBase
             ->setAttribute('rows', 5);
     }
 
-    function html()
+    public function html()
     {
-        return '<textarea '.$this->getAttributesHtml('value').'>'.htmlspecialchars($this->getValue()).'</textarea>';
+        return sprintf('<textarea%s>%s</textarea>', $this->getAttributesHtml('value'), static::escape($this->getValue()));
     }
 
     public function setCols($cols)

@@ -2,7 +2,7 @@
 
 use Msz\Forms\Base;
 use Msz\Forms\Exception;
-use Msz\Forms\Validation\ValidationBase;
+use Msz\Forms\Validators\Validator;
 
 abstract class ElementBase extends Base
 {
@@ -11,7 +11,7 @@ abstract class ElementBase extends Base
 
 
     protected $label;
-    /** @var ValidationBase[] */
+    /** @var Validator[] */
     protected $validation = array();
     protected $errors = array();
 
@@ -35,7 +35,7 @@ abstract class ElementBase extends Base
 
     public function handleRequest(array $request = null)
     {
-        if (is_null($request)) {
+        if (null === $request) {
             $request = $_REQUEST;
         }
 
@@ -50,7 +50,7 @@ abstract class ElementBase extends Base
         }
 
         if ($this->useStripTags) {
-            $s = preg_replace('/<.*>/isU', '', $s);
+            $s = preg_replace('/<.*>/sU', '', $s);
         }
 
         $this->setValue(trim($s));
@@ -63,7 +63,7 @@ abstract class ElementBase extends Base
         if (!empty($this->validation)) {
             foreach ($this->validation as $validation) {
                 if (!$validation->isValid($this->getValue())) {
-                    $this->errors[] = str_replace("%element%", $this->getName(), $validation->getMessage());
+                    $this->errors[] = str_replace('%element%', $this->getName(), $validation->getMessage());
                     $valid = false;
                 }
             }
@@ -78,7 +78,7 @@ abstract class ElementBase extends Base
 
     public function render($view)
     {
-        $view->render($this);
+        //$view->render($this);
     }
 
     /* ----------------------------------*/
@@ -122,11 +122,11 @@ abstract class ElementBase extends Base
 
         foreach($validation as $object) {
 
-            if($object instanceof ValidationBase) {
+            if($object instanceof Validator) {
                 $this->validation[] = $object;
             }
             else {
-                throw new Exception('not ValidationBase');
+                throw new Exception('not Validator class');
             }
         }
 
@@ -147,35 +147,9 @@ abstract class ElementBase extends Base
         return $this;
     }
 
-    public function setClass($class)
-    {
-        $this->setAttribute('class', $class);
-
-        return $this;
-    }
-
-    public function addClass($class)
-    {
-        $this->appendAttribute('class', $class);
-
-        return $this;
-    }
-
     public function setReadOnly()
     {
         $this->setAttribute('readonly', 'readonly');
-
-        return $this;
-    }
-
-    public function setStyle($style)
-    {
-        $this->setAttribute('style', rtrim(trim($style),';') . ';');        
-    }
-    
-    public function addStyle($style)
-    {
-        $this->appendAttribute('style', rtrim(trim($style),';') . ';');
 
         return $this;
     }
@@ -187,7 +161,7 @@ abstract class ElementBase extends Base
 
     public function setPosition($position)
     {
-        if (!in_array($position, array(self::POSITION_INPUT, self::POSITION_BUTTON))) {
+        if (!in_array($position, array(self::POSITION_INPUT, self::POSITION_BUTTON), true)) {
             throw new Exception('incorrect set type: ' . $position);
         }
         $this->position = $position;

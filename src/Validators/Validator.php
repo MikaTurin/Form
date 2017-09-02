@@ -1,10 +1,10 @@
-<?php namespace Msz\Forms\Validator;
+<?php namespace Msz\Forms\Validators;
 
-abstract class ValidatorBase
+abstract class Validator
 {
-    protected $message = "%element% is invalid.";
+    protected $message = '%element% is invalid';
 
-    public function __construct($message = "")
+    public function __construct($message = '')
     {
         if (!empty($message)) {
             $this->message = $message;
@@ -25,9 +25,8 @@ abstract class ValidatorBase
 
     public function isNotApplicable($value)
     {
-        $is = (is_null($value) || is_array($value) || $value === "");
-        return $is;
+        return (null === $value || is_array($value) || $value === '');
     }
 
-    public abstract function isValid($value);
+    abstract public function isValid($value);
 }

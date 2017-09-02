@@ -11,15 +11,17 @@ class Form extends Base
     protected $fields = array();
     protected $errors = array();
     protected $rules = array();
-    protected $tableWidth = '';
+    protected $tableWidth;
     protected $wasProcess = false;
 
-    function __construct($name, $action = null, $method = null)
+    protected $cellspacing = 0;
+
+    public function __construct($name, $action = null, $method = null)
     {
         $this->fields = array();
         $this->setName($name);
         $this->setAction($action);
-        if (!is_null($method)) {
+        if (null !== $method) {
             $this->setMethod($method);
         }
         else {
@@ -64,7 +66,7 @@ class Form extends Base
     public function setMethod($method)
     {
         $method = strtoupper($method);
-        if (!in_array($method, array(self::METHOD_GET, self::METHOD_POST))) {
+        if (!in_array($method, array(self::METHOD_GET, self::METHOD_POST), true)) {
             throw new Exception('incorrect method: ' . $method);
         }
         $this->setAttribute('method', $method);
@@ -75,21 +77,25 @@ class Form extends Base
     public function setMethodGet()
     {
         $this->setMethod(self::METHOD_GET);
+
+        return $this;
     }
 
     public function setMethodPost()
     {
         $this->setMethod(self::METHOD_POST);
+
+        return $this;
     }
 
     public function isMethodGet()
     {
-        return $this->getMethod() == self::METHOD_GET;
+        return $this->getMethod() === self::METHOD_GET;
     }
 
     public function isMethodPost()
     {
-        return $this->getMethod() == self::METHOD_POST;
+        return $this->getMethod() === self::METHOD_POST;
     }
 
     public function getAction()
@@ -121,19 +127,19 @@ class Form extends Base
 
     public function htmlSubmit($button_text, $class = '', $extra = '', $type = 1)
     {
-        if (strlen($class)) {
+        if ('' !== $class) {
             $class = ' class="' . $class . '"';
         }
-        if (strlen($extra)) {
+        if ('' !== $extra) {
             $extra = ' ' . $extra;
         }
 
         $ret = '';
 
-        if ($type == 3) {
+        if ($type === 3) {
             $ret .=
                 '<input type="image" border="0" alt="' . $button_text . '"' . $extra . '>';
-        } elseif ($type == 2) {
+        } elseif ($type === 2) {
             $ret .=
                 '<button' . $class . $extra . '>' . $button_text . '</button>';
         } else {
@@ -159,16 +165,15 @@ class Form extends Base
     public function end()
     {
         return
-            '<input type="hidden" name="' . $this->name . '_myfrm_sbm" value="1">' .
+            '<input type="hidden" name="' . $this->getName() . '_myfrm_sbm" value="1">' .
             '</form>';
     }
 
     public function html($border = 0, $hide_submit = false, $hide_labels = false)
     {
-        if (strlen($this->tableWidth)) {
+        $ww = '';
+        if ($this->tableWidth) {
             $ww = ' width="' . $this->tableWidth . '"';
-        } else {
-            $ww = '';
         }
 
         $ret = $this->begin() .
@@ -177,17 +182,17 @@ class Form extends Base
         $buttons = array();
 
         foreach ($this->fields as $field) {
-            if ($field->getPosition() == ElementBase::POSITION_BUTTON) {
+            if ($field->getPosition() === ElementBase::POSITION_BUTTON) {
                 $buttons[] = $field;
                 continue;
             }
             $label = '';
             $name = $field->getName();
-            if (strlen($field->getLabel())) {
+            if ($field->getLabel() !== '') {
                 $name = $field->getLabel();
             }
             if (!$hide_labels) {
-                $label = '<td valign="top" class="' . $this->classname . '">' . $name . ' </td>';
+                $label = '<td valign="top" class="' . $this->getClass() . '">' . $name . ' </td>';
             }
 
             $ret .=
@@ -197,13 +202,15 @@ class Form extends Base
         }
 
 
-        if (!$hide_submit || sizeof($buttons)) {
+        if (!$hide_submit || count($buttons)) {
             $ret .= '<tr><td colspan="2" align="right"><br>';
 
             foreach ($buttons as $button) {
                 $ret .= $button->html();
             }
-            if (!$hide_submit) $ret .= $this->htmlSubmit('Submit');
+            if (!$hide_submit) {
+                $ret .= $this->htmlSubmit('Submit');
+            }
             $ret .= '</td></tr>' . "\n";
         }
 
@@ -238,8 +245,10 @@ class Form extends Base
     {
         if ($this->isMethodGet()) {
             return isset($_GET[$this->getName() . '_myfrm_sbm']);
-        } elseif ($this->isMethodPost()) {
-            return (boolean)sizeof($_POST);
+        }
+
+        if ($this->isMethodPost()) {
+            return (bool)count($_POST);
         }
 
         return false;
@@ -247,7 +256,7 @@ class Form extends Base
 
     public function process($force = false)
     {
-        if ($this->wasProcess && $force == false) {
+        if ($this->wasProcess && !$force) {
             return true;
         }
 
@@ -266,7 +275,7 @@ class Form extends Base
         }
 
         $this->checkRules();
-        if (sizeof($this->errors)) {
+        if (count($this->errors)) {
             return false;
         }
         $this->wasProcess = true;
@@ -319,7 +328,9 @@ class Form extends Base
     {
         $r = array();
         foreach ($this->fields as $field) {
-            if ($skipEmpty && !$field->getValue()) continue;
+            if ($skipEmpty && !$field->getValue()) {
+                continue;
+            }
             $r[$field->getName()] = $field->getValue();
         }
         return $r;

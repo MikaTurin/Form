@@ -2,23 +2,15 @@
 
 class Submit extends ElementBase
 {
-    public function __construct($name, $class = null, $value = null)
+    public function __construct($name, array $attributes = null)
     {
-        parent::__construct($name, $class, $value);
-        $this->type = ElementBase::BUTTON;
-    }
-
-    public function html()
-    {
-        $extra = $this->generateExtra(array(
-            'name' => $this->name,
-            'value' => $this->value
-        ));
-        return '<input type="submit"'. $extra . '>';
+        parent::__construct($name, $attributes);
+        $this->position = ElementBase::POSITION_BUTTON;
+        $this->setAttribute('type', 'submit');
     }
 
     public function isUsed()
     {
-        return (isset($_REQUEST[$this->name]) && $_REQUEST[$this->name] == $this->value);
+        return (isset($_REQUEST[$this->getName()]) && $_REQUEST[$this->getName()] === $this->getValue());
     }
 }

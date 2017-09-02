@@ -1,6 +1,6 @@
 <?php namespace Msz\Forms\Element;
 
-use Msz\Forms\Validation\ValidationClosure;
+use Msz\Forms\Validators\Closure;
 
 class Select extends ElementBase
 {
@@ -15,17 +15,17 @@ class Select extends ElementBase
         return $this;
     }
 
-    function html()
+    public function html()
     {
         $ret = '<select' . $this->getAttributesHtml('value') . '>';
 
-        if (!is_null($this->emptyFirstOption)) {
+        if (null !== $this->emptyFirstOption) {
             $ret .= '<option value="">'.$this->emptyFirstOption.'</option>';
         }
 
         foreach ($this->options as $k => $v) {
             $selected = $extra = '';
-            if ((string)$this->getValue() == (string)$k) {
+            if ($this->getValue() === $k) {
                 $selected = ' selected="selected"';
             }
             if (isset($this->optionAttributes[$k])) {
@@ -48,7 +48,7 @@ class Select extends ElementBase
     public function verifyValueWithOptionsList()
     {
         $options = $this->options;
-        $validation = new ValidationClosure(function ($value) use ($options) {
+        $validation = new Closure(function ($value) use ($options) {
             return array_key_exists($value, $options);
         });
 
