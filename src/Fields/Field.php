@@ -1,10 +1,10 @@
-<?php namespace Msz\Forms\Element;
+<?php namespace Msz\Forms\Fields;
 
 use Msz\Forms\Base;
 use Msz\Forms\Exception;
 use Msz\Forms\Validators\Validator;
 
-abstract class ElementBase extends Base
+abstract class Field extends Base
 {
     const POSITION_INPUT = 1;
     const POSITION_BUTTON = 2;

@@ -1,8 +1,8 @@
-<?php namespace Msz\Forms\Element;
+<?php namespace Msz\Forms\Fields;
 
 use Msz\Forms\Exception;
 
-class Text extends ElementBase
+class Text extends Field
 {
     public function __construct($name, array $attributes = null)
     {

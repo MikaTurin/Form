@@ -1,4 +1,4 @@
-<?php namespace Msz\Forms\Element;
+<?php namespace Msz\Forms\Fields;
 
 class Password extends Text
 {

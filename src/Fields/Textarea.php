@@ -1,6 +1,6 @@
-<?php namespace Msz\Forms\Element;
+<?php namespace Msz\Forms\Fields;
 
-class Textarea extends ElementBase
+class Textarea extends Field
 {
     public function __construct($name, array $attributes = null)
     {

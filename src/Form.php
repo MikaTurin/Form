@@ -1,13 +1,13 @@
 <?php namespace Msz\Forms;
 
-use Msz\Forms\Element\ElementBase;
+use Msz\Forms\Fields\Field;
 
 class Form extends Base
 {
     const METHOD_GET = 'GET';
     const METHOD_POST = 'POST';
 
-    /** @var ElementBase[] */
+    /** @var Field[] */
     protected $fields = array();
     protected $errors = array();
     protected $rules = array();
@@ -41,7 +41,7 @@ class Form extends Base
         }
     }
 
-    public function addElement(ElementBase $obj)
+    public function addElement(Field $obj)
     {
         $this->fields[$obj->getName()] = $obj;
 
@@ -182,7 +182,7 @@ class Form extends Base
         $buttons = array();
 
         foreach ($this->fields as $field) {
-            if ($field->getPosition() === ElementBase::POSITION_BUTTON) {
+            if ($field->getPosition() === Field::POSITION_BUTTON) {
                 $buttons[] = $field;
                 continue;
             }
@@ -225,7 +225,7 @@ class Form extends Base
         $s = $this->begin();
 
         array_walk($this->fields, function ($el) use (&$s) {
-            /** @var ElementBase $el */
+            /** @var Field $el */
             $s .= $el->html();
         });
         $s .= '<input type="button" value="submit" onclick="this.form.submit();">';

@@ -1,8 +1,8 @@
-<?php namespace Msz\Forms\Element;
+<?php namespace Msz\Forms\Fields;
 
 use Msz\Forms\Validators\Closure;
 
-class Select extends ElementBase
+class Select extends Field
 {
     protected $options;
     protected $optionAttributes = array(); //array of strings, key have to match with options key

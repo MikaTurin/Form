@@ -1,6 +1,6 @@
-<?php namespace Msz\Forms\Element;
+<?php namespace Msz\Forms\Fields;
 
-class Hidden extends ElementBase
+class Hidden extends Field
 {
     public function __construct($name, array $attributes = null)
     {

@@ -1,11 +1,11 @@
-<?php namespace Msz\Forms\Element;
+<?php namespace Msz\Forms\Fields;
 
-class Submit extends ElementBase
+class Submit extends Field
 {
     public function __construct($name, array $attributes = null)
     {
         parent::__construct($name, $attributes);
-        $this->position = ElementBase::POSITION_BUTTON;
+        $this->position = Field::POSITION_BUTTON;
         $this->setAttribute('type', 'submit');
     }
 
